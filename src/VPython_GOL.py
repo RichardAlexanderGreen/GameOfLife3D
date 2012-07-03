@@ -17,9 +17,9 @@ class GameOfLifeUserInterface( object ):
     def __init__( self, nRows = 5, nColumns = 5, nLayers = 5 ):
 
         self.grid = Grid3D( rows = nRows, columns = nColumns, layers = nLayers )
-        self.grid.seedAtRandom( percentage = 50 )
-
-        # INITIALIZE SCENE PARAMTERS
+        self.cells = dict()
+        
+        # Initialize scene parameters
         self.initializeSceneParameters()
         # Draw the grid. Put spots at intersections.
         self.drawGrid( self.grid )
@@ -41,13 +41,13 @@ class GameOfLifeUserInterface( object ):
         Draw the grid. Put spots at centers.
         '''
         #print( '*** Draw the Grid *** ') 
-        spotSize = 0.1
+        spotSize = 0.05
         for layerIndex in range( 1, grid.layers + 1):
             for rowIndex in range( 1, grid.rows + 1):
                 for columnIndex in range( 1, grid.columns + 1):
                     spot = visual.box( width = spotSize, length = spotSize, height = spotSize,
-                                       pos = ( layerIndex, rowIndex, columnIndex ),
-                                       color = grey80
+                                       pos = (  rowIndex, columnIndex, layerIndex ),
+                                       color = color.white
                                        )
             
         
@@ -61,7 +61,11 @@ class GameOfLifeUserInterface( object ):
         # gobject.timeout_add( 1000, self.next_grid )
         # gtk.main()
         self.drawLiveCells()
-        
+
+    def next_grid( self ):
+        self.grid = self.grid.nextGeneration()
+        self.drawLiveCells( )
+        return True
 
     def drawLiveCells( self ):
         '''
@@ -74,29 +78,35 @@ class GameOfLifeUserInterface( object ):
                     cellValue = self.grid.getCell( layer = layerIndex, row = rowIndex, column = columnIndex )
                     self.drawCell( layer = layerIndex, row = rowIndex, column = columnIndex, value = cellValue )
                     
-        
-        
-
-    def next_grid( self ):
-        self.grid = self.grid.nextGeneration()
-        self.drawLiveCells( )
-        return True
-
-
     def drawCell( self, layer, row, column, value ):
         cellValue = value
+        position = ( row, column, layer )
+ 
         if cellValue == None:
             pass
         elif cellValue == 0:
+            oldCell = self.cells.get( position )
+            oldCell.visible = False
+            del oldCell
             showDeadCell = visual.sphere( color = color.red
-                                          , radius = 0.4
-                                          , pos = ( layer, row, column )
+                                          , opacity = 0.4
+                                          , radius = 0.2
+                                          , pos = position
                                           )
+            self.cells[ position ] = showDeadCell
         elif cellValue > 0:
-            showLiveCell = visual.sphere( color = color.green
-                                          , pos = ( layer, row, column )
+            oldCell = self.cells.get( position )
+            if oldCell != None:
+                oldCell.visible = False
+                del oldCell
+            
+            greenLevel = min( 1.0, 0.5 + (cellValue * 0.2) )
+            showLiveCell = visual.sphere( color = ( 0.0, greenLevel, 0.0  )
+                                          , opacity = greenLevel
                                           , radius = 0.4
+                                          , pos = position
                                           )
+            self.cells[ position ] = showLiveCell
         else:
             print( '???',  layer, row, column , cellValue )
 
@@ -117,7 +127,7 @@ else:
     print( '*** Starting with Flasher pattern ***' )
 
     gameSize = 11
-    middle = gameSize / 2
+    middle = 1 + gameSize // 2
     game = GameOfLifeUserInterface( nRows = gameSize, nColumns = gameSize, nLayers = gameSize )
     game.grid.setCell( row = middle, column = middle, layer = middle-1, value = 1 )
     game.grid.setCell( row = middle, column = middle, layer = middle, value = 1 )
