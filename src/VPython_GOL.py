@@ -49,10 +49,7 @@ class GameOfLifeUserInterface( object ):
                                        pos = (  rowIndex, columnIndex, layerIndex ),
                                        color = color.white
                                        )
-            
-        
-        
-
+    """
     def expose_cb( self, window, event ):
         self.draw_grid()
 
@@ -61,7 +58,7 @@ class GameOfLifeUserInterface( object ):
         # gobject.timeout_add( 1000, self.next_grid )
         # gtk.main()
         self.drawLiveCells()
-
+    """
     def next_grid( self ):
         self.grid = self.grid.nextGeneration()
         self.drawLiveCells( )
@@ -84,37 +81,29 @@ class GameOfLifeUserInterface( object ):
  
         if cellValue == None:
             pass
+        
         elif cellValue == 0:
             oldCell = self.cells.get( position )
-            oldCell.visible = False
-            del oldCell
-            showDeadCell = visual.sphere( color = color.red
-                                          , opacity = 0.4
-                                          , radius = 0.2
-                                          , pos = position
-                                          )
-            self.cells[ position ] = showDeadCell
+            oldCell.color = color.red
+            oldCell.opacity = 0.4
+            oldCell.radius = 0.2
+            
         elif cellValue > 0:
             oldCell = self.cells.get( position )
+            greenLevel = min( 1.0, 0.4 + (cellValue * 0.2) )
             if oldCell != None:
-                oldCell.visible = False
-                del oldCell
-            
-            greenLevel = min( 1.0, 0.5 + (cellValue * 0.2) )
-            showLiveCell = visual.sphere( color = ( 0.0, greenLevel, 0.0  )
-                                          , opacity = greenLevel
-                                          , radius = 0.4
-                                          , pos = position
-                                          )
-            self.cells[ position ] = showLiveCell
+                oldCell.color = ( 0.0, greenLevel, 0.0 )
+                oldCell.opacity = greenLevel
+                oldCell.radius = 0.4
+            else:
+                showLiveCell = visual.sphere( color = ( 0.0, greenLevel, 0.0  )
+                                              , opacity = greenLevel
+                                              , radius = 0.4
+                                              , pos = position
+                                              )
+                self.cells[ position ] = showLiveCell
         else:
             print( '???',  layer, row, column , cellValue )
-
-""" REMOVED FOR NOW
-    def program_exit( self, widget, event ):
-        gtk.main_quit()
-        return False
-"""
 
 if __name__ == "__main__":
     """
@@ -144,5 +133,3 @@ else:
     while scene.kb.getkey():
         game.next_grid()
     
- 
-
