@@ -45,7 +45,7 @@ class GameOfLifeUserInterface( object ):
         for layerIndex in range( 1, grid.layers + 1):
             for rowIndex in range( 1, grid.rows + 1):
                 for columnIndex in range( 1, grid.columns + 1):
-                    spot = visual.box( width = spotSize, length = spotSize, height = spotSize,
+                    spot = box( width = spotSize, length = spotSize, height = spotSize,
                                        pos = (  rowIndex, columnIndex, layerIndex ),
                                        color = color.white
                                        )
@@ -96,7 +96,7 @@ class GameOfLifeUserInterface( object ):
                 oldCell.opacity = greenLevel
                 oldCell.radius = 0.4
             else:
-                showLiveCell = visual.sphere( color = ( 0.0, greenLevel, 0.0  )
+                showLiveCell = sphere( color = ( 0.0, greenLevel, 0.0  )
                                               , opacity = greenLevel
                                               , radius = 0.4
                                               , pos = position
@@ -105,14 +105,7 @@ class GameOfLifeUserInterface( object ):
         else:
             print( '???',  layer, row, column , cellValue )
 
-if __name__ == "__main__":
-    """
-    if len( sys.argv ) != 2:
-        print "VPython_GOL.py [file-name]"
-        exit( 0 )
-    """
-    pass
-else:
+def runFlasher():
     print( '*** Starting with Flasher pattern ***' )
 
     gameSize = 11
@@ -133,3 +126,16 @@ else:
     while scene.kb.getkey():
         game.next_grid()
     
+
+
+if __name__ == "__main__":
+    """
+    if len( sys.argv ) != 2:
+        print "VPython_GOL.py [file-name]"
+        exit( 0 )
+    """
+    print "***pass***"
+    
+    pass
+
+runFlasher()
